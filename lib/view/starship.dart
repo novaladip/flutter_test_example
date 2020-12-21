@@ -14,8 +14,10 @@ class _StarshipViewState extends State<StarshipView> {
       appBar: AppBar(
         title: Text("Starships"),
       ),
-      body: BlocBuilder<StarshipsBloc, StarshipsState>(
-        builder: (context, state) {
+      body: Builder(
+        builder: (context) {
+          final state = context.watch<StarshipsBloc>().state;
+
           if (state is StarshipsFailure) {
             return Center(
               child: Column(
@@ -24,7 +26,7 @@ class _StarshipViewState extends State<StarshipView> {
                   MaterialButton(
                     child: Text("Retry"),
                     onPressed: () => context
-                        .bloc<StarshipsBloc>()
+                        .read<StarshipsBloc>()
                         .add(StarshipsEventFetch()),
                   )
                 ],
@@ -54,7 +56,7 @@ class _StarshipViewState extends State<StarshipView> {
 
   @override
   void initState() {
-    context.bloc<StarshipsBloc>().add(StarshipsEventFetch());
+    context.read<StarshipsBloc>().add(StarshipsEventFetch());
     super.initState();
   }
 }
