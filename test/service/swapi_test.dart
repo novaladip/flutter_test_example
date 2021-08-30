@@ -1,10 +1,24 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutterbloctesting/model/starship.dart';
 import 'package:flutterbloctesting/service/swapi.dart';
-import 'package:mockito/mockito.dart';
+
+class DioAdapterMock extends HttpClientAdapter {
+  @override
+  void close({bool force = false}) {
+    // TODO: implement close
+  }
+
+  @override
+  Future<ResponseBody> fetch(RequestOptions options,
+      Stream<Uint8List>? requestStream, Future? cancelFuture) {
+    // TODO: implement fetch
+    throw UnimplementedError();
+  }
+}
 
 final responseJson = {
   "name": "TIE Advanced x1",
@@ -26,8 +40,6 @@ final responseJson = {
   "edited": "2014-12-20T21:23:49.889000Z",
   "url": "http://swapi.dev/api/starships/13/"
 };
-
-class DioAdapterMock extends Mock implements HttpClientAdapter {}
 
 void main() {
   final Dio dio = Dio();
@@ -78,14 +90,5 @@ void main() {
         Headers.contentTypeHeader: [Headers.jsonContentType],
       },
     );
-
-    when(dioAdapterMock.fetch(any, any, any))
-        .thenAnswer((_) async => httpResponse);
-
-    final starships = [Starship.fromJSON(responseJson)];
-
-    final starshipsFromService = await swapiService.fetchStartships();
-
-    expect(starships, starshipsFromService);
   });
 }

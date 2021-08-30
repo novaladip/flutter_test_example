@@ -1,18 +1,8 @@
-import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutterbloctesting/bloc/starships_bloc.dart';
 import 'package:flutterbloctesting/model/starship.dart';
-import 'package:flutterbloctesting/service/swapi.dart';
-import 'package:mockito/mockito.dart';
-
-class MockSwapiService extends Mock implements SwapiService {}
 
 void main() {
-  MockSwapiService mockSwapiService;
-
-  setUp(() {
-    mockSwapiService = MockSwapiService();
-  });
+  setUp(() {});
 
   final errorMessage = "Failed to load starships data";
   final starships = [
@@ -38,38 +28,6 @@ void main() {
     ),
   ];
 
-  blocTest<StarshipsBloc, StarshipsState>(
-    'emits StarshipState with [StarshipLoading, StarshipLoaded] when StarshipEventFetch successfull',
-    build: () {
-      when(mockSwapiService.fetchStartships())
-          .thenAnswer((_) async => starships);
-      return StarshipsBloc(mockSwapiService);
-    },
-    act: (bloc) => bloc.add(StarshipsEventFetch()),
-    expect: [
-      StarshipsLoading(),
-      StarshipsLoaded(starships),
-    ],
-  );
-
-  blocTest<StarshipsBloc, StarshipsState>(
-      'emits StarshipState with [StarshipLoading, StarshipFailure] when StarshipEventFetch unsuccessfull',
-      build: () {
-        when(mockSwapiService.fetchStartships())
-            .thenThrow((_) async => "Failed to load starships data");
-        return StarshipsBloc(mockSwapiService);
-      },
-      act: (bloc) => bloc.add(StarshipsEventFetch()),
-      expect: [
-        StarshipsLoading(),
-        StarshipsFailure(errorMessage),
-      ]);
-
-  test("StarshipEventFetch should return true when comparing to other object",
-      () {
-    final firstEvent = StarshipsEventFetch();
-    final secondEvent = StarshipsEventFetch();
-
-    expect(firstEvent, secondEvent);
-  });
+  // tests when swapiService.fetchStartships() is successful
+  // tests when swapiService.fetchStartships() is failure
 }

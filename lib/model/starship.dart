@@ -1,26 +1,25 @@
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 
 class Starship extends Equatable {
   const Starship({
-    @required this.name,
-    @required this.model,
-    @required this.manufactur,
-    @required this.costInCredits,
-    @required this.length,
-    @required this.maxAtmospheringSpeed,
-    @required this.crew,
-    @required this.passengers,
-    @required this.cargoCapacity,
-    @required this.consumables,
-    @required this.hyperdriveRating,
-    @required this.mglt,
-    @required this.starshipClass,
-    @required this.pilots,
-    @required this.films,
-    @required this.created,
-    @required this.edited,
-    @required this.url,
+    required this.name,
+    required this.model,
+    required this.manufactur,
+    required this.costInCredits,
+    required this.length,
+    required this.maxAtmospheringSpeed,
+    required this.crew,
+    required this.passengers,
+    required this.cargoCapacity,
+    required this.consumables,
+    required this.hyperdriveRating,
+    required this.mglt,
+    required this.starshipClass,
+    required this.pilots,
+    required this.films,
+    required this.created,
+    required this.edited,
+    required this.url,
   });
 
   final String name;
