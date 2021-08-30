@@ -1,8 +1,35 @@
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutterbloctesting/service/swapi.dart';
+import 'package:mocktail/mocktail.dart';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutterbloctesting/bloc/starships_bloc.dart';
 import 'package:flutterbloctesting/model/starship.dart';
 
+class MockStarshipsBloc extends MockBloc<StarshipsEvent, StarshipsState>
+    implements StarshipsBloc {}
+
+class FakeStartshipsEvent extends Fake implements StarshipsEvent {}
+
+class FakeStartshipsState extends Fake implements StarshipsState {}
+
+class MockSwapiService extends Mock implements SwapiService {}
+
+void setUpFakeStarshipsBloc() {
+  registerFallbackValue(FakeStartshipsEvent());
+  registerFallbackValue(FakeStartshipsState());
+}
+
 void main() {
-  setUp(() {});
+  late SwapiService swapiService;
+
+  setUp(() {
+    swapiService = MockSwapiService();
+  });
+
+  setUpAll(() {
+    setUpFakeStarshipsBloc();
+  });
 
   final errorMessage = "Failed to load starships data";
   final starships = [
@@ -28,6 +55,45 @@ void main() {
     ),
   ];
 
-  // tests when swapiService.fetchStartships() is successful
-  // tests when swapiService.fetchStartships() is failure
+  group('StarshipsBloc', () {
+    // tests when swapiService.fetchStartships() is successful
+    blocTest<StarshipsBloc, StarshipsState>(
+      'when StarshipsEventFetch is success',
+      build: () {
+        // mock result value
+        when(() => swapiService.fetchStartships()).thenAnswer(
+          (_) async => starships,
+        );
+        return StarshipsBloc(swapiService);
+      },
+      act: (bloc) => bloc.add(StarshipsEventFetch()),
+      expect: () => [
+        StarshipsLoading(),
+        StarshipsLoaded(starships),
+      ],
+      verify: (bloc) {
+        verify(() => swapiService.fetchStartships()).called(1);
+      },
+    );
+
+    // tests when swapiService.fetchStartships() is failure
+    blocTest<StarshipsBloc, StarshipsState>(
+      'when StarshipsEventFetch is failure',
+      build: () {
+        // mock result value
+        when(() => swapiService.fetchStartships()).thenAnswer(
+          (_) async => throw errorMessage,
+        );
+        return StarshipsBloc(swapiService);
+      },
+      act: (bloc) => bloc.add(StarshipsEventFetch()),
+      expect: () => [
+        StarshipsLoading(),
+        StarshipsFailure(errorMessage),
+      ],
+      verify: (bloc) {
+        verify(() => swapiService.fetchStartships()).called(1);
+      },
+    );
+  });
 }

@@ -51,9 +51,7 @@ void main() {
     expect(starshipTwo, starshipOne);
   });
 
-  test(
-      'Starship should return true when comparing the same value starship from constructor and from json',
-      () {
+  test('fromJson', () {
     final starship = Starship(
       name: "TIE Advanced x1",
       model: "Twin Ion Engine Advanced x1",

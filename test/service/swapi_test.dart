@@ -5,19 +5,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutterbloctesting/model/starship.dart';
 import 'package:flutterbloctesting/service/swapi.dart';
+import 'package:mocktail/mocktail.dart';
 
-class DioAdapterMock extends HttpClientAdapter {
-  @override
-  void close({bool force = false}) {
-    // TODO: implement close
-  }
+class DioAdapterMock extends Mock implements HttpClientAdapter {}
 
-  @override
-  Future<ResponseBody> fetch(RequestOptions options,
-      Stream<Uint8List>? requestStream, Future? cancelFuture) {
-    // TODO: implement fetch
-    throw UnimplementedError();
-  }
+class FakeRequestOptions extends Fake implements RequestOptions {}
+
+void setUpFakeDioAdapter() {
+  registerFallbackValue(FakeRequestOptions());
 }
 
 final responseJson = {
@@ -43,8 +38,12 @@ final responseJson = {
 
 void main() {
   final Dio dio = Dio();
-  SwapiService swapiService;
-  DioAdapterMock dioAdapterMock;
+  late SwapiService swapiService;
+  late DioAdapterMock dioAdapterMock;
+
+  setUpAll(() {
+    setUpFakeDioAdapter();
+  });
 
   setUp(() {
     dioAdapterMock = DioAdapterMock();
@@ -90,5 +89,14 @@ void main() {
         Headers.contentTypeHeader: [Headers.jsonContentType],
       },
     );
+
+    // mock dio adapter result
+    when(() => dioAdapterMock.fetch(any(), any(), any()))
+        .thenAnswer((_) async => httpResponse);
+
+    final expectedResponse = [Starship.fromJSON(responseJson)];
+    final result = await swapiService.fetchStartships();
+
+    expect(result, expectedResponse);
   });
 }
